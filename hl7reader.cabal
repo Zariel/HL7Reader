@@ -1,0 +1,14 @@
+Name:               HL7Reader
+Version:            0.1
+Description:        A Tool to dump hl7 messages in a human readable way
+License:            MIT
+Build-Type:         Simple
+cabal-version:      >= 1.6
+
+Executable hl7r
+    Main-is:        hl7Main.hs
+    ghc-options:    -O2 -threaded
+    Build-Depends:  base >= 4 && < 5
+        , network
+        , split
+        , parsec
