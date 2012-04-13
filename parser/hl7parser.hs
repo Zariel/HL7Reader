@@ -1,6 +1,7 @@
 module Parser.HL7Parser
-( parseMSH
-, parsePID
+( parseMessage
+, parseSegments
+, parseSegment
 ) where
 
 import Text.ParserCombinators.Parsec
@@ -24,51 +25,57 @@ optionSep sep = do
 firstVal :: Parser Char
 firstVal = anyChar
 
+-- Consumes the rest of the string until end of segment
 endSeg :: Parser String
-endSeg = do
-    manyTill anyChar $ try $ string "\r"
+endSeg = manyTill anyChar $ try $ string "\r"
+
+consume s = manyTill anyChar $ try $ char s
+
+segSep :: Parser Char
+segSep = char '\r'
 
 -- API
-parseMSH :: String -> Either ParseError HL7Segment
-parseMSH = parse parseMSH' "(MSH)"
+parseMessage :: Parser [ HL7Segment ]
+parseMessage = do
+    msh <- parseMSH
+    let sep = getSeperator msh
+    segments <- parseSegments sep
 
-parseMSH' :: Parser HL7Segment
-parseMSH' = do
+    return (msh : segments)
+
+parseSegments :: Char -> Parser [ HL7Segment ]
+parseSegments sep = fmap catMaybes $ (parseSegment sep) `sepEndBy` segSep
+
+parseSegment :: Char -> Parser (Maybe HL7Segment)
+parseSegment s = (try $ parsePID s) <|> (try $ parseOBR s) <|> unknown
+    where unknown = do
+            many $ noneOf "\r"
+            return Nothing
+
+parseMSH = do
+    msh <- string "MSH"
     sep <- firstVal
-
     encoding <- seperator sep
-
     sendingApp <- optionSep sep
-
     sendingFac <- optionSep sep
-
     recvApp <- optionSep sep
-
     recvFac <- optionSep sep
-
     dateTime <- seperator sep
-
     security <- optionSep sep
-
     messageType <- seperator sep
-
     messageID <- seperator sep
-
     processID <- seperator sep
-
     versionID <- seperator sep
 
     endSeg
 
-    return $ MSH [ sep ] encoding sendingApp sendingFac recvApp recvFac dateTime security messageType messageID processID versionID
+    return $ MSH sep encoding sendingApp sendingFac recvApp recvFac dateTime security messageType messageID processID versionID
 
-parsePID :: String -> Maybe HL7Segment
-parsePID x = case parse parsePID' "(PID)" x of
-                  Left err -> Nothing
-                  Right pid -> Just pid
+parsePID :: Char -> Parser (Maybe HL7Segment)
+parsePID sep = do
+    string "PID"
+    char sep
 
-parsePID' :: Parser HL7Segment
-parsePID' = do
     setID <- optionSep sep
     patientID <- seperator sep
     patientIDList <- seperator sep
@@ -80,9 +87,17 @@ parsePID' = do
     alias <- optionSep sep
     race <- optionSep sep
 
-    endSeg
+    many $ noneOf "\r"
 
-    return $ PID setID patientID patientIDList otherID name maidenName dob sex alias race
+    return $ Just $ PID setID patientID patientIDList otherID name maidenName dob sex alias race
 
-    where
-        sep = '|'
+parseOBR :: Char -> Parser (Maybe HL7Segment)
+parseOBR sep = do
+    string "OBR"
+    char sep
+
+    setID <- optionSep sep
+
+    many $ noneOf "\r"
+
+    return $ Just $ OBR setID

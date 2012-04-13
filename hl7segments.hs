@@ -8,7 +8,7 @@ data HL7Segment =
                 MSA String
               | QRD String
               | MSH
-                { getSeperator      :: String
+                { getSeperator      :: Char
                 , getEncoding       :: String
                 , getSendingApp     :: Maybe String
                 , getSendingFac     :: Maybe String
@@ -32,5 +32,8 @@ data HL7Segment =
                 , getSex            :: Maybe String
                 , getPatientAlias   :: Maybe String
                 , getRace           :: Maybe String
+                }
+               | OBR
+                { getSetID          :: Maybe String
                 }
               deriving (Show, Eq, Ord)
