@@ -3,6 +3,7 @@ module HL7Segments
 ) where
 
 import Data.Maybe
+import HL7Fields
 
 data HL7Segment =
                 MSA String
@@ -14,7 +15,7 @@ data HL7Segment =
                 , getSendingFac     :: Maybe String
                 , getRecvApp        :: Maybe String
                 , getRecvFac        :: Maybe String
-                , getDateTime       :: String
+                , getDateTime       :: HL7FieldString
                 , getSecurity       :: Maybe String
                 , getMessageType    :: String
                 , getMessageID      :: String
@@ -26,7 +27,7 @@ data HL7Segment =
                 , getPatientID      :: String
                 , getPatientIDList  :: String
                 , getOtherPatientID :: String
-                , getPatientName    :: String
+                , getPatientName    :: HL7FieldString
                 , getMaidenName     :: Maybe String
                 , getDOB            :: Maybe String
                 , getSex            :: Maybe String
@@ -35,5 +36,8 @@ data HL7Segment =
                 }
                | OBR
                 { getSetID          :: Maybe String
+                , getPlacerNumber   :: String
+                , getFillerNumber   :: String
                 }
+               | OBX
               deriving (Show, Eq, Ord)

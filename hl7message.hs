@@ -4,7 +4,6 @@ module HL7Message
 ) where
 
 import Text.ParserCombinators.Parsec
-import Data.List.Split
 import Data.Maybe
 
 import HL7Segments
@@ -21,10 +20,10 @@ data HL7Message =
                 }
               deriving (Show, Eq, Ord)
 
-fromString :: String -> HL7Message
-fromString s = case parse parseMessage "(hl7)" s of
-                    Left err -> NAK
-                    Right msg -> buildMsg msg
+fromString :: String -> [ HL7Segment ]
+fromString s = case runParser parseMessage '|' "(hl7)" s of
+                    Left err -> []
+                    Right msg -> msg
 
 parseSegments' :: HL7Segment -> String -> HL7Message
 parseSegments' (msh @ MSH { getMessageType = "ORU^R01" }) rest = ORU msh Nothing
