@@ -1,17 +1,18 @@
 import System.IO
-import System.IO.Error
 import System.Environment
+import qualified Control.Exception as E
 
 import HL7Message
+import HL7Segments
 
 main :: IO ()
-main = catch main' handler
+main = E.catch main' handler
 
 main' :: IO ()
 main' = do
     args <- getArgs
     content <- readFile $ handleArgs args
-    putStr $ readHl7 content
+    pprint $ readHL7 content
     where
         handleArgs [] = ""
         handleArgs (x:_) = x
@@ -19,5 +20,11 @@ main' = do
 handler :: IOError -> IO ()
 handler = ioError
 
-readHl7 :: String -> String
-readHl7 msg = show $ HL7Message.fromString msg
+readHL7 :: String -> [ HL7Segment ]
+readHL7 = fromString
+
+pprint :: [ HL7Segment ] -> IO ()
+pprint [] = return ()
+pprint (x:xs) = do
+    putStrLn $ show x
+    pprint xs
