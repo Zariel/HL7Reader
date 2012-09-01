@@ -7,8 +7,6 @@ cabal-version:      >= 1.6
 
 Executable hl7r
     Main-is:        hl7Main.hs
-    ghc-options:    -O2 -threaded
+    ghc-options:    -O2 -static
     Build-Depends:  base >= 4 && < 5
-        , network
-        , split
         , parsec
