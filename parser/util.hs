@@ -1,6 +1,5 @@
 module Parser.Util
 ( seperator
-, optionSep
 , firstVal
 , endSeg
 , segSep
@@ -16,14 +15,6 @@ seperator :: HL7Parser String
 seperator = do
     sep <- getState
     x <- many $ noneOf [ sep ]
-    char sep
-
-    return x
-
-optionSep :: HL7Parser (Maybe String)
-optionSep = do
-    sep <- getState
-    x <- optionMaybe $ many1 $ noneOf [ sep ]
     char sep
 
     return x

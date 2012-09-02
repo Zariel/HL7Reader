@@ -46,7 +46,7 @@ parseDate = parseEitherSegment parseDT
 parseDT :: HL7FieldParserEither
 parseDT = do
     date <- count 8 digit
-    time <- count 6 digit
+    time <- many $ digit
 
     nextSeg
 

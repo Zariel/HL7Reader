@@ -35,12 +35,12 @@ parseMSH = do
     updateState (return sep)
 
     encoding <- seperator
-    sendingApp <- optionSep
-    sendingFac <- optionSep
-    recvApp <- optionSep
-    recvFac <- optionSep
+    sendingApp <- optionMaybe $ seperator
+    sendingFac <- optionMaybe $ seperator
+    recvApp <- optionMaybe $ seperator
+    recvFac <- optionMaybe $ seperator
     dateTime <- parseDate
-    security <- optionSep
+    security <- optionMaybe $ seperator
     messageType <- seperator
     messageID <- seperator
     processID <- seperator
@@ -54,16 +54,16 @@ parsePID :: HL7SegParser
 parsePID = do
     header "PID"
 
-    setID <- optionSep
+    setID <- optionMaybe $ seperator
     patientID <- seperator
     patientIDList <- seperator
     otherID <- seperator
     name <- parseName
-    maidenName <- optionSep
-    dob <- optionSep
-    sex <- optionSep
-    alias <- optionSep
-    race <- optionSep
+    maidenName <- optionMaybe $ seperator
+    dob <- optionMaybe $ seperator
+    sex <- optionMaybe $ seperator
+    alias <- optionMaybe $ seperator
+    race <- optionMaybe $ seperator
 
     many $ noneOf "\r"
 
@@ -73,13 +73,18 @@ parseOBR :: HL7SegParser
 parseOBR = do
     header "OBR"
 
-    setID <- optionSep
+    setID <- optionMaybe $ seperator
     placer <- seperator
     filler <- seperator
+    serviceID <- seperator
+    priority <- seperator
+    requestDate <- parseDate
+    obsDate <- parseDate
+    obsEndDate <- parseDate
 
-    many $ noneOf "\r"
+    rest <- many $ noneOf "\r"
 
-    return $ Just $ OBR setID placer filler
+    return $ Just $ OBR setID placer filler serviceID priority requestDate obsDate obsEndDate rest
 
 parseOBX :: HL7SegParser
 parseOBX = do
