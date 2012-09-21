@@ -1,5 +1,6 @@
 module Parser.Util
-( seperator
+( nextSep
+, segment
 , firstVal
 , endSeg
 , segSep
@@ -10,12 +11,17 @@ import Text.ParserCombinators.Parsec
 
 import Parser.ParserTypes
 
+nextSep :: HL7Parser Char
+nextSep = do
+    sep <- getState
+    char sep
+
 -- Parsec combinators
-seperator :: HL7Parser String
-seperator = do
+segment :: HL7Parser String
+segment = do
     sep <- getState
     x <- many $ noneOf [ sep ]
-    char sep
+    nextSep
 
     return x
 
@@ -26,7 +32,7 @@ header :: String -> HL7Parser ()
 header s = do
     sep <- getState
     string s
-    char sep
+    nextSep
 
     return ()
 

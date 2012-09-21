@@ -34,17 +34,17 @@ parseMSH = do
 
     updateState (return sep)
 
-    encoding <- seperator
-    sendingApp <- optionMaybe $ seperator
-    sendingFac <- optionMaybe $ seperator
-    recvApp <- optionMaybe $ seperator
-    recvFac <- optionMaybe $ seperator
+    encoding <- segment
+    sendingApp <- optionMaybe $ segment
+    sendingFac <- optionMaybe $ segment
+    recvApp <- optionMaybe $ segment
+    recvFac <- optionMaybe $ segment
     dateTime <- parseDate
-    security <- optionMaybe $ seperator
-    messageType <- seperator
-    messageID <- seperator
-    processID <- seperator
-    versionID <- seperator
+    security <- optionMaybe $ segment
+    messageType <- segment
+    messageID <- segment
+    processID <- segment
+    versionID <- segment
 
     endSeg
 
@@ -54,16 +54,16 @@ parsePID :: HL7SegParser
 parsePID = do
     header "PID"
 
-    setID <- optionMaybe $ seperator
-    patientID <- seperator
-    patientIDList <- seperator
-    otherID <- seperator
+    setID <- optionMaybe $ segment
+    patientID <- segment
+    patientIDList <- segment
+    otherID <- segment
     name <- parseName
-    maidenName <- optionMaybe $ seperator
-    dob <- optionMaybe $ seperator
-    sex <- optionMaybe $ seperator
-    alias <- optionMaybe $ seperator
-    race <- optionMaybe $ seperator
+    maidenName <- optionMaybe $ segment
+    dob <- optionMaybe $ segment
+    sex <- optionMaybe $ segment
+    alias <- optionMaybe $ segment
+    race <- optionMaybe $ segment
 
     many $ noneOf "\r"
 
@@ -73,11 +73,11 @@ parseOBR :: HL7SegParser
 parseOBR = do
     header "OBR"
 
-    setID <- optionMaybe $ seperator
-    placer <- seperator
-    filler <- seperator
-    serviceID <- seperator
-    priority <- seperator
+    setID <- optionMaybe $ segment
+    placer <- segment
+    filler <- segment
+    serviceID <- segment
+    priority <- segment
     requestDate <- parseDate
     obsDate <- parseDate
     obsEndDate <- parseDate

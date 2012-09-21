@@ -15,15 +15,6 @@ type HL7FieldParser = HL7Parser HL7Field
 
 type HL7FieldParserEither = HL7Parser (Either HL7Field String)
 
-nextSeg :: HL7Parser ()
-nextSeg = do
-    sep <- getState
-
-    many $ noneOf [ sep ]
-    char sep
-
-    return ()
-
 getField :: HL7Parser String
 getField = do
     x <- many $ noneOf "^"
@@ -33,7 +24,7 @@ getField = do
 
 eitherSegment :: HL7Parser (Either HL7Field String)
 eitherSegment = do
-    seg <- seperator
+    seg <- segment
 
     return $ Right seg
 
@@ -48,7 +39,7 @@ parseDT = do
     date <- count 8 digit
     time <- many $ digit
 
-    nextSeg
+    nextSep
 
     return $ Left $ DT date time
 
@@ -62,6 +53,6 @@ parseXPN = do
     suffix <- getField
     prefix <- getField
 
-    nextSeg
+    nextSep
 
     return $ Left $ XPN foreName surName suffix prefix
